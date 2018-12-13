@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_question_score
+    - paragraphs.paragraphs_type.question
+  module:
+    - options
+id: paragraph.question.field_question_score
+field_name: field_question_score
+entity_type: paragraph
+bundle: question
+label: Score
+description: 'A score that goes from 1 (easy) to 5 (hard) to designate complexity of the question'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_integer

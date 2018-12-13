@@ -1,0 +1,5 @@
+name: Questionnaire Redirect
+type: module
+description: Custom redirect node/# urls to its pathauto alias.
+core: 8.x
+package: Questionnaire

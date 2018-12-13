@@ -1,0 +1,238 @@
+<?php
+
+/**
+ * @file
+ * Contains questionnaire.module
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\Core\Entity\Query\QueryInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Drupal\questionnaire\QuestionnaireManager;
+
+/**
+ * Implements hook_help().
+ */
+function questionnaire_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the questionnaire module.
+    case 'help.page.questionnaire':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Handle Questionnaire specific code.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function questionnaire_theme() {
+  return array(
+    'questionnaire_review_page' => array(
+      'variables' => array(
+        'title' => NULL,
+        'content' => NULL
+      ),
+      'template' => 'questionnaire-review-page',
+    ),
+  );
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function questionnaire_page_attachments(array &$attachments) {
+  $theme = \Drupal::theme()->getActiveTheme()->getName();
+  if ($theme == 'seven') {
+    $attachments['#attached']['library'][] = 'questionnaire/extra.admin';
+  }
+}
+
+/**
+ * Implements hook_node_view().
+ * Tranform questionnaire into form on full view
+ */
+function questionnaire_node_view(array &$build, NodeInterface $node, $display, $view_mode) {
+
+  if ($node->bundle() == 'questionnaire' && !$node->field_question->isEmpty()) {
+    if (_questionnaire_is_full_view_mode($view_mode)) {
+        $form = \Drupal::FormBuilder()->getForm('Drupal\questionnaire\Form\QuestionnaireForm', $node);
+        $build['content']['field_question'] = $form;
+    }
+  }
+}
+
+function questionnaire_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if ($node->bundle() == 'questionnaire') {
+    if (!$node->field_question->isEmpty()) {
+      $question = $node->field_question->referencedEntities();
+      $variables['question_counter'] = count($question);
+    }
+
+    if (!$node->field_supervisor->isEmpty()) {
+      $supervisor = $node->field_supervisor->referencedEntities();
+      $variables['supervisor'] = $supervisor[0]->getAccountName();
+    }
+  }
+}
+
+/**
+ * Check if the view mode is considered a full view.
+ */
+function _questionnaire_is_full_view_mode($view_mode) {
+  return in_array($view_mode, ['full', 'default']);
+}
+
+/**
+ * Add total score in each questionnaire.
+ */
+function questionnaire_node_presave(NodeInterface $node) {
+  if ($node->bundle() == 'questionnaire') {
+    $question = $node->field_question->referencedEntities();
+    $score = 0;
+    foreach ($question as $value) {
+      $score += $value->field_question_score->value;
+    }
+    $node->set('field_total_score', $score);
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ * Allow Supervisors to only view referenced questionnaire.
+ */
+function questionnaire_node_access(NodeInterface $node, $operation, AccountInterface $account) {
+  // Filter only questionnaire content type
+  if($operation == 'view' && $node->bundle() == 'questionnaire') {
+    if (QuestionnaireManager::isUserHasCustomRole($account)) {
+      $access_result = QuestionnaireManager::getAccountAccess($account, $node);
+      if ($access_result) {
+        return AccessResult::allowed();
+      } else {
+        return AccessResult::forbidden();
+      }
+    } elseif (!$account->isAuthenticated() && !QuestionnaireManager::isUserHasCustomRole($account)) {
+      return AccessResult::forbidden();
+    }
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ *
+ * Alter content view to only use one views page for content list
+ * Alter query to specify argument depending on current user's permission
+ */
+function questionnaire_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'content') {
+    _questionnaire_author_filter($query);
+  }
+
+
+  if ($view->id() == 'my_result' && $view->current_display == 'result_per_user') {
+    _questionnaire_user_result_filter($query);
+  }
+}
+
+function _questionnaire_user_result_filter($query) {
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasPermission('bypass node access')) {
+    if ($current_user->hasPermission('access own questionnaire')) {
+      // If current user is a questionnaire manager, he can only see content that he created.
+      $query->where[1]['conditions'][] = array(
+        'field' => 'node_field_data_node__field_result_questionnaire.uid',
+        'value' => $current_user->id(),
+        'operator' => 'in',
+      );
+    }
+
+    if ($current_user->hasPermission('view supervised questionnaire')) {
+      // If current user is a supervisor, he can only see content that he is referenced to.
+      $query->where[1]['conditions'][] = array(
+        'field' => 'node_field_data_node__field_result_questionnaire__node__field_supervisor.field_supervisor_target_id',
+        'value' => $current_user->id(),
+        'operator' => '=',
+      );
+    }
+  }
+}
+
+function _questionnaire_author_filter($query) {
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasPermission('bypass node access')) {
+    if ($current_user->hasPermission('access any questionnaire')) {
+
+      // If current user is a site admin, show all questionnaire.
+      $query->where[1]['conditions'][] = array(
+        'field' => 'node_field_data.type',
+        'value' => 'questionnaire',
+        'operator' => 'IN',
+      );
+    }
+
+    if ($current_user->hasPermission('access own questionnaire')) {
+      // If current user is a questionnaire manager, he can only see content that he created.
+      $query->where[1]['conditions'][] = array(
+        'field' => 'node_field_data.uid',
+        'value' => $current_user->id(),
+        'operator' => 'in',
+      );
+    }
+
+    if ($current_user->hasPermission('view supervised questionnaire')) {
+      // If current user is a supervisor, he can only see content that he is referenced to.
+      $query->where[1]['conditions'][] = array(
+        'field' => 'node__field_supervisor.field_supervisor_target_id',
+        'value' => $current_user->id(),
+        'operator' => '=',
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function questionnaire_form_alter(&$form, FormStateInterface $form_state, &$form_id) {
+  if (in_array($form_id, ['node_questionnaire_form', 'node_questionnaire_edit_form'])) {
+    // Attaching library that uncheck ther other checkbox if new one is check.
+    $form['#attached']['library'][] = 'questionnaire/answer.field';
+
+    $form['#validate'][] = '_questionnaire_form_validate';
+  }
+}
+
+/**
+ * Validation callback for the questionnaire add/edit form.
+ */
+function _questionnaire_form_validate(&$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues('field_question');
+  // Require one answer selection per question
+  if ($questions = $values['field_question']) {
+    $no_selection = [];
+    foreach ($questions as $qkey => $question) {
+      if (is_numeric($qkey)) {
+        $answers = $question['subform']['field_question_answer_list'];
+        $aid = 0;
+        foreach($answers as $key => $answer) {
+          $aid += $answer['subform']['field_correct_answer']['value'];
+        }
+
+        if ($aid < 1) {
+          $name = 'field_question]['.$qkey.'][subform][field_question_answer_list';
+          $form_state->setErrorByName($name, t('Please check one correct answer'));
+        }
+      }
+    }
+  }
+}

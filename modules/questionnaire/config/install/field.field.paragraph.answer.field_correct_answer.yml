@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_correct_answer
+    - paragraphs.paragraphs_type.answer
+id: paragraph.answer.field_correct_answer
+field_name: field_correct_answer
+entity_type: paragraph
+bundle: answer
+label: 'Correct answer'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Correct
+  off_label: Incorrect
+field_type: boolean

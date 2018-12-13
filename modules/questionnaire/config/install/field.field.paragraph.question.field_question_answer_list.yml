@@ -1,0 +1,33 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_question_answer_list
+    - paragraphs.paragraphs_type.answer
+    - paragraphs.paragraphs_type.question
+  module:
+    - entity_reference_revisions
+id: paragraph.question.field_question_answer_list
+field_name: field_question_answer_list
+entity_type: paragraph
+bundle: question
+label: 'Answer list'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    negate: 0
+    target_bundles:
+      answer: answer
+    target_bundles_drag_drop:
+      answer:
+        enabled: true
+        weight: 3
+      question:
+        weight: 4
+        enabled: false
+field_type: entity_reference_revisions

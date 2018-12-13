@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_total_score
+    - node.type.questionnaire
+id: node.questionnaire.field_total_score
+field_name: field_total_score
+entity_type: node
+bundle: questionnaire
+label: 'Total score'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

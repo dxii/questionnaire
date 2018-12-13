@@ -1,0 +1,10 @@
+questionnaire.result:
+  route_name: questionnaire.result
+  base_route: entity.node.canonical
+  title: 'All result'
+  weight: -1
+questionnaire.review:
+  route_name: questionnaire.review
+  base_route: entity.node.canonical
+  title: 'Review my result'
+  weight: -1

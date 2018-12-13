@@ -1,0 +1,5 @@
+services:
+  questionnaire_redirect.redirectnode:
+    class: Drupal\questionnaire_redirect\EventSubscriber\QuestionnaireRedirectSubscriber
+    tags:
+      - { name: event_subscriber }

@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a questionnaire teaser.
+ *
+ */
+#}
+<article{{ attributes }}>
+
+  {{ title_prefix }}
+  {% if not page %}
+    <h2{{ title_attributes }}>
+      {% if logged_in %}
+        <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+      {% else %}
+        {{ label }}
+      {% endif %}
+    </h2>
+  {% endif %}
+  {{ title_suffix }}
+  <div{{ attributes }}>
+    {% if logged_in and supervisor %}
+      <div>{{ 'Supervisor:' | t }}
+        <a href="{{ path('view.supervisor_questionnaire_list.list', {'arg_0': supervisor}) }}">{{ supervisor | capitalize }}</a>
+      </div>
+    {% endif %}
+    {% if question_counter %}
+      <div>{{ 'Questions:' | t }} {{ question_counter }}</div>
+    {% endif %}
+    {% if content.field_total_score.0 %}
+      <div>{{ 'Total possible score:' | t }} {{ content.field_total_score.0 }}</div>
+    {% endif %}
+  </div>
+
+</article>
+
+
+

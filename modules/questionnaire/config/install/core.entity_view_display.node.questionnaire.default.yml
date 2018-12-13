@@ -1,0 +1,48 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.questionnaire.field_question
+    - field.field.node.questionnaire.field_supervisor
+    - field.field.node.questionnaire.field_total_score
+    - node.type.questionnaire
+  module:
+    - entity_reference_revisions
+    - user
+id: node.questionnaire.default
+targetEntityType: node
+bundle: questionnaire
+mode: default
+content:
+  field_question:
+    type: entity_reference_revisions_entity_view
+    weight: 102
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_supervisor:
+    weight: 101
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_total_score:
+    weight: 103
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden: {  }

@@ -1,0 +1,11 @@
+#field-question-answer-list-values .paragraph-type-title {
+  display: none;
+}
+
+.field--name-field-question-score .fieldset-legend {
+  font-size: 16px;
+}
+.field--name-field-question-score [id*="-field-question-score"] .form-item {
+  display: inline-block;
+  margin-right: 15px;
+}

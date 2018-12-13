@@ -1,0 +1,4 @@
+// the random color generator mixin
+@mixin random-color($value: 255) {
+  background-color: rgb(random($value), random($value), random($value));
+}

@@ -1,0 +1,43 @@
+.page-node-type-questionnaire {
+  .field--name-body {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .form-submit {
+    margin-top: 24px;
+  }
+}
+
+.questionnaire-markup {
+  padding-bottom: 24px;
+}
+
+.questionnaire-grid-list {
+  .color-square {
+    // looping through nth-children
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        article {
+         @include random-color(255);       
+        }
+      }
+    }
+   
+    article {
+      padding: 12px 24px;
+      transition: opacity 0.2s;
+      font-size: 16px;
+      color: #ddd;
+      margin-bottom: 24px;
+
+      &:hover {
+        opacity: 0.9;
+      }
+
+      a {
+        color: #f7f7f7;
+      }
+    }
+  }
+}

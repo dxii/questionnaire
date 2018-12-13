@@ -1,0 +1,11 @@
+http_path = "/themes/custom/quiz"
+css_dir = "css"
+sass_dir = "scss"
+images_dir = "images"
+javascripts_dir = "js"
+http_images_path = http_path + "/" + images_dir
+http_generated_images_path = http_images_path
+sourcemap = false
+line_comments = false
+asset_cache_buster = :none
+cache = false

@@ -1,0 +1,14 @@
+.paragraph--type--answer {
+  padding: 4px 12px;
+
+  &.correct {
+    border: 2px solid green;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+  }
+
+  @media (min-width: $screen-tablet) {
+    width: 50%;
+  }
+}

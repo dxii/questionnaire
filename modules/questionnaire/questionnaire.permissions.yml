@@ -1,0 +1,9 @@
+access own questionnaire:
+  title: 'Access own questionnaire'
+  description: 'Gain access to own questionnaire and results page.'
+access any questionnaire:
+  title: 'Access any questionnaire'
+  description: 'Gain access to any questionnaire and any results page.'
+view supervised questionnaire:
+  title: 'View supervised questionnaire'
+  description: 'Gain access to view supervised questionnaire and its results page.'

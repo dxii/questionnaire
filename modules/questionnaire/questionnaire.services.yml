@@ -1,0 +1,4 @@
+services:
+  questionnaire.questionnaire_manager:
+    class: Drupal\questionnaire\QuestionnaireManager
+    arguments: []

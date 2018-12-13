@@ -1,0 +1,24 @@
+questionnaire.result:
+  path: 'questionnaire/{node}/results'
+  description: 'Page to display all user result.'
+  defaults:
+    _controller: 'Drupal\questionnaire\Controller\QuestionnaireResultController::quetionnaireResultPage'
+    _title: 'Result'
+  requirements:
+    _custom_access: '\Drupal\questionnaire\Controller\QuestionnaireResultController::access'
+  options:
+    parameters:
+      node:
+        type: entity:node
+questionnaire.review:
+  path: 'questionnaire/{node}/review'
+  defaults:
+    _controller: '\Drupal\questionnaire\Controller\ReviewResultController::reviewResultPage'
+    _title: 'Review my result'
+  requirements:
+    _custom_access: '\Drupal\questionnaire\Controller\ReviewResultController::access'
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node

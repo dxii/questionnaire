@@ -1,0 +1,6 @@
+name: Questionnaire
+type: module
+description: 'Adds Questionnaire content type.'
+core: 8.x
+dependencies:
+  - node

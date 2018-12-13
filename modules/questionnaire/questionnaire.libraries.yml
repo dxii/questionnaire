@@ -1,0 +1,10 @@
+extra.admin:
+  css:
+    theme:
+      css/questionnaire.extra.admin.css: {}
+answer.field:
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+  js:
+    js/questionnaire.answer.field.js: { preprocess: false }
